@@ -9,9 +9,9 @@ plan tests => 3;
 
 use_ok ('Test::XML::RPC::Catalyst','Catty');
 
-my $client = Test::XML::RPC::Catalyst->new;
+my $xmlrpc = Test::XML::RPC::Catalyst->new;
 
-is_deeply ($client->call ('system.listMethods'),['foo']);
+$xmlrpc->can_xmlrpc_methods ([qw/foo/]);
 
-is ($client->call ('foo',42),42);
+is ($xmlrpc->call ('foo',42),42);
 

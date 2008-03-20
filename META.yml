@@ -20,4 +20,4 @@ requires:
   Test::Simple: 0.72
   Test::WWW::Mechanize::Catalyst: 0.41
   XML::RPC: 0.6
-version: 0.01_01
+version: 0.01

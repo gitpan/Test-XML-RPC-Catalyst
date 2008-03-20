@@ -8,7 +8,7 @@ use Test::WWW::Mechanize::Catalyst ();
 
 use base qw/XML::RPC/;
 
-our $VERSION = '0.01_01';
+our $VERSION = '0.01';
 
 my $Test = Test::Builder->new;
 
@@ -25,6 +25,34 @@ sub new {
 };
 
 sub import { Test::WWW::Mechanize::Catalyst::import (@_) }
+
+sub can_xmlrpc_methods {
+  my ($self,$can_methods,$message) = @_;
+
+  die "Method list must be an arrayref!\n" unless ref $can_methods eq 'ARRAY';
+
+  $message ||= 'can XMLRPC methods';
+
+  my $server_methods = $self->call ('system.listMethods');
+
+  unless (ref $server_methods eq 'ARRAY') {
+    $Test->ok (0,$message);
+
+    $Test->diag ('I was unable to retrieve a method list from the server');
+
+    return;
+  }
+
+  my %server_method_map = map { $_ => 1 } @$server_methods;
+
+  for my $can_method (@$can_methods) {
+    return $Test->ok (0,$message) unless exists $server_method_map{$can_method};
+  }
+
+  $Test->ok (1,$message);
+
+  return;
+}
 
 1;
 
@@ -65,7 +93,18 @@ what path the XMLRPC access point is which by default is '/rpc'.
 
 =head1 METHODS
 
-See L<XML::RPC>.
+=over 4
+
+=item B<can_xmlrpc_methods>
+
+  $xmlrpc->can_xmlrpc_methods ([qw/foo.bar foo.baz/],'Supports my xmlrpc methods');
+
+Tests if methods given as an arrayref in the first argument exists on
+the server.
+
+=back
+
+For methods inherited from the superclass, see L<XML::RPC>.
 
 =head1 SEE ALSO
 
